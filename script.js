@@ -20,12 +20,13 @@ function handleFile() {
 }
 
 async function updateView() {
-    var workbook = new ExcelJS.Workbook();
+    let workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(model.data);
     var excelDataDiv = document.getElementById('excelData');
     excelDataDiv.innerHTML = '';
 
     workbook.eachSheet(function (worksheet, sheetId) {
+        model.worksheet = worksheet;        
         var sheetDiv = document.createElement('div');
         sheetDiv.classList.add('sheet-container');
         sheetDiv.innerHTML = '<h3>' + worksheet.name + '</h3>';
@@ -46,6 +47,7 @@ async function updateView() {
 
         sheetDiv.innerHTML += tableHtml;
         excelDataDiv.appendChild(sheetDiv);
+        return;
     });
 }
 
@@ -56,23 +58,3 @@ function formatCell(content, colIndex, level) {
     return `<td>${pre + content.replaceAll(' ', '&nbsp;')}</td>`;
 }
 
-function updateCheckboxes(checkbox, checkboxes) {
-    var checked = checkbox.checked;
-    var levelColumnIndex = 0; // Anta at level-kolonnen alltid er den første kolonnen
-    var selectedRowLevel = parseInt(checkbox.getAttribute('data-level'), 10);
-
-    // Finn indeksen til checkboxen som ble endret
-    var checkboxIndex = Array.from(checkboxes).indexOf(checkbox);
-
-    // Gå gjennom de påfølgende radene og oppdater checkboxene
-    for (var i = checkboxIndex + 1; i < checkboxes.length; i++) {
-        var currentRowLevel = parseInt(checkboxes[i].getAttribute('data-level'), 10);
-
-        if (currentRowLevel > selectedRowLevel) {
-            checkboxes[i].checked = checked;
-        } else {
-            // Hvis raden har samme nivå eller lavere, stopp oppdateringen
-            break;
-        }
-    }
-}
