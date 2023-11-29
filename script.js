@@ -7,6 +7,7 @@ function handleFile() {
         var reader = new FileReader();
         reader.onload = function (e) {
             var data = new Uint8Array(e.target.result);
+            window.data = data;            
             processData(data);
         };
         reader.readAsArrayBuffer(file);
