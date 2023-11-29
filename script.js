@@ -26,22 +26,28 @@ async function processData(data) {
         var sheetDiv = document.createElement('div');
         sheetDiv.classList.add('sheet-container');
         sheetDiv.innerHTML = `<h3>${worksheet.name}</h3>`;
-        window.worksheet = worksheet;
 
-        var tableHtml = `<table class="excel-table">
-                            <thead>
-                                <tr>
-                                    ${worksheet.columns.map(column => `<th>${column.header}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${worksheet.getSheetValues().map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
-                            </tbody>
-                        </table>`;
+        var tableHtml = /*HTML*/`
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        ${worksheet.getRow(1).values.map(value => `<th>${value || ''}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${worksheet.getSheetValues().slice(1).map(row => /*HTML*/`
+                        <tr>
+                            ${row.map(formatCell).join('')}
+                        </tr>`).join('')}
+                </tbody>
+            </table>`;
 
         sheetDiv.innerHTML += tableHtml;
         excelDataDiv.appendChild(sheetDiv);
-        return;
     });
 }
 
+function formatCell(content) {
+    if (!content) return '<td></td>';
+    return '<td>' + content.replaceAll(' ', '&nbsp;') + '</td>';
+}
