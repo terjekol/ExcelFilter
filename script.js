@@ -1,14 +1,17 @@
+const model = {
+    skipRows: [],
+};
+
 function handleFile() {
     var fileInput = document.getElementById('fileInput');
-    var excelDataDiv = document.getElementById('excelData');
 
     var file = fileInput.files[0];
     if (file) {
         var reader = new FileReader();
         reader.onload = function (e) {
             var data = new Uint8Array(e.target.result);
-            window.data = data;
-            processData(data);
+            model.data = data;
+            updateView();
         };
         reader.readAsArrayBuffer(file);
     } else {
@@ -16,42 +19,33 @@ function handleFile() {
     }
 }
 
-function processData(data) {
+async function updateView() {
     var workbook = new ExcelJS.Workbook();
-    workbook.xlsx.load(data).then(function () {
-        var excelDataDiv = document.getElementById('excelData');
-        excelDataDiv.innerHTML = '';
+    await workbook.xlsx.load(model.data);
+    var excelDataDiv = document.getElementById('excelData');
+    excelDataDiv.innerHTML = '';
 
-        workbook.eachSheet(function (worksheet, sheetId) {
-            var sheetDiv = document.createElement('div');
-            sheetDiv.classList.add('sheet-container');
-            sheetDiv.innerHTML = '<h3>' + worksheet.name + '</h3>';
+    workbook.eachSheet(function (worksheet, sheetId) {
+        var sheetDiv = document.createElement('div');
+        sheetDiv.classList.add('sheet-container');
+        sheetDiv.innerHTML = '<h3>' + worksheet.name + '</h3>';
 
-            var tableHtml = '<table class="excel-table">' +
-                '<thead><tr>' +
-                worksheet.getRow(1).values.map(value => '<th>' + (value || '') + '</th>').join('') +
-                '</tr></thead>' +
-                '<tbody>' +
-                worksheet.getSheetValues().slice(1).map(row => {
-                    var level = row[0];
-                    return '<tr>' +
-                        row.map((content, colIndex) =>
-                            formatCell(content, colIndex, level)).join('') +
-                        '</tr>';
-                }).join('') +
-                '</tbody></table>';
+        var tableHtml = '<table class="excel-table">' +
+            '<thead><tr>' +
+            worksheet.getRow(1).values.map(value => '<th>' + (value || '') + '</th>').join('') +
+            '</tr></thead>' +
+            '<tbody>' +
+            worksheet.getSheetValues().slice(1).map((row, rowIndex) => {
+                var level = row[0];
+                return '<tr>' +
+                    row.map((content, colIndex) =>
+                        formatCell(content, colIndex, level)).join('') +
+                    '</tr>';
+            }).join('') +
+            '</tbody></table>';
 
-            sheetDiv.innerHTML += tableHtml;
-            excelDataDiv.appendChild(sheetDiv);
-
-            // Legg til hendelser for checkbox endring
-            var checkboxes = document.querySelectorAll('.excel-table tbody tr td input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
-                    updateCheckboxes(checkbox, checkboxes);
-                });
-            });
-        });
+        sheetDiv.innerHTML += tableHtml;
+        excelDataDiv.appendChild(sheetDiv);
     });
 }
 
