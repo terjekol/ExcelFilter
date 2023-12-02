@@ -26,7 +26,7 @@ async function updateView() {
     excelDataDiv.innerHTML = '';
 
     workbook.eachSheet(function (worksheet, sheetId) {
-        model.worksheet = worksheet;        
+        model.worksheet = worksheet;
         var sheetDiv = document.createElement('div');
         sheetDiv.classList.add('sheet-container');
         sheetDiv.innerHTML = '<h3>' + worksheet.name + '</h3>';
@@ -36,11 +36,12 @@ async function updateView() {
             worksheet.getRow(1).values.map(value => '<th>' + (value || '') + '</th>').join('') +
             '</tr></thead>' +
             '<tbody>' +
-            worksheet.getSheetValues().slice(1).map((row, rowIndex) => {
+            worksheet.getSheetValues().map((row, rowIndex) => {
+                if (rowIndex < 2) return '';
                 var level = row[0];
                 return '<tr>' +
                     row.map((content, colIndex) =>
-                        formatCell(content, colIndex, level)).join('') +
+                        formatCell(content, colIndex, level, rowIndex)).join('') +
                     '</tr>';
             }).join('') +
             '</tbody></table>';
@@ -51,10 +52,40 @@ async function updateView() {
     });
 }
 
-function formatCell(content, colIndex, level) {
+function formatCell(content, colIndex, level, rowIndex) {
     if (!content) return '<td></td>';
-    var checkbox = '<input type="checkbox" checked data-level="' + level + '"/>';
+    const checked = model.skipRows.includes(rowIndex) ? '' : 'checked';
+    var checkbox = `<input onclick="toggleRow(${rowIndex})" ${checked} type="checkbox"/>`;
     const pre = colIndex == 2 ? checkbox : ''
     return `<td>${pre + content.replaceAll(' ', '&nbsp;')}</td>`;
 }
+
+function toggleRow(rowIndex) {
+    const isSelected = !model.skipRows.includes(rowIndex);
+    const level = getLevel(rowIndex);
+    setSelectedRow(rowIndex, !isSelected, level);
+    updateView();
+}
+
+function getLevel(rowIndex) {
+    const row = model.worksheet.getRow(rowIndex);
+    if (!row) return -1;
+    const values = row.values;
+    if(!values) return -1;
+    return values[0];
+}
+
+function setSelectedRow(rowIndex, isSelected, startLevel) {
+    const skipRows = model.skipRows;
+    const level = getLevel(rowIndex);
+    if (level < startLevel) return;
+    if (isSelected) {
+        if (!skipRows.includes(rowIndex)) skipRows.push(rowIndex);
+    } else {
+        const index = skipRows.indexOf(rowIndex);
+        if (index != -1) skipRows.splice(index, 1);
+    }
+    setSelectedRow(rowIndex + 1, isSelected, startLevel);
+}
+
 
