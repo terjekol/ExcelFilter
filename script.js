@@ -63,8 +63,21 @@ function formatCell(content, colIndex, level, rowIndex) {
 function toggleRow(rowIndex) {
     const isSelected = !model.skipRows.includes(rowIndex);
     const level = getLevel(rowIndex);
-    setSelectedRow(rowIndex, !isSelected, level);
+    setSelectedRow(rowIndex, !isSelected, level, true);
     updateView();
+}
+
+function setSelectedRow(rowIndex, isSelected, startLevel, force) {
+    const level = getLevel(rowIndex);
+    if (!force && level <= startLevel) return;
+    const skipRows = model.skipRows;
+    if (isSelected) {
+        const index = skipRows.indexOf(rowIndex);
+        if (index != -1) skipRows.splice(index, 1);
+    } else {
+        if (!skipRows.includes(rowIndex)) skipRows.push(rowIndex);
+    }
+    setSelectedRow(rowIndex + 1, isSelected, startLevel);
 }
 
 function getLevel(rowIndex) {
@@ -72,20 +85,7 @@ function getLevel(rowIndex) {
     if (!row) return -1;
     const values = row.values;
     if(!values) return -1;
-    return values[0];
+    const level = values[1];
+    if(!level)return -1;
+    return parseInt(level);
 }
-
-function setSelectedRow(rowIndex, isSelected, startLevel) {
-    const skipRows = model.skipRows;
-    const level = getLevel(rowIndex);
-    if (level < startLevel) return;
-    if (isSelected) {
-        if (!skipRows.includes(rowIndex)) skipRows.push(rowIndex);
-    } else {
-        const index = skipRows.indexOf(rowIndex);
-        if (index != -1) skipRows.splice(index, 1);
-    }
-    setSelectedRow(rowIndex + 1, isSelected, startLevel);
-}
-
-
