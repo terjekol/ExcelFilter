@@ -6,12 +6,13 @@ function handleFile() {
     var fileInput = document.getElementById('fileInput');
     var file = fileInput.files[0];
     if (file) {
+        model.fileName = file.name;
         var reader = new FileReader();
         reader.onload = async function (e) {
             var data = new Uint8Array(e.target.result);
-            let workbook = new ExcelJS.Workbook();
-            await workbook.xlsx.load(data);
-            workbook.eachSheet(worksheet => model.worksheet = model.worksheet || worksheet);
+            model.workbook = new ExcelJS.Workbook();
+            await model.workbook.xlsx.load(data);
+            model.workbook.eachSheet(worksheet => model.worksheet = model.worksheet || worksheet);
             initData();
             updateView();
         };
@@ -29,7 +30,7 @@ function initData() {
         const name = (row[10] || '').toLowerCase();
         if (fileName.includes('_skel.prt')
             || fileName[0] == '1'
-            || (name.includes('99')&& name.includes('part'))
+            || (name.includes('99') && name.includes('part'))
         ) {
             model.skipRows.push(rowIndex);
         }
@@ -54,7 +55,7 @@ function updateView() {
             if (rowIndex < 2) return '';
             var level = row[0];
             let html = '';
-            for(let colIndex = 1; colIndex < row.length; colIndex++){
+            for (let colIndex = 1; colIndex < row.length; colIndex++) {
                 html += formatCell(row[colIndex] || '', colIndex, rowIndex);
             }
             return '<tr>' + html + '</tr>';
@@ -102,3 +103,23 @@ function getLevel(rowIndex) {
     if (!level) return -1;
     return parseInt(level);
 }
+
+async function downloadFile() {
+    const skipRows = JSON.parse(JSON.stringify(model.skipRows));
+    skipRows.sort().reverse();
+    for(let rowIndex of skipRows){
+        model.worksheet.spliceRows(rowIndex, 1);
+    }
+
+
+    var excelBuffer = await model.workbook.xlsx.writeBuffer();
+    var blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'fixed_' + model.fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+    
