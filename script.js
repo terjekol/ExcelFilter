@@ -106,12 +106,11 @@ function getLevel(rowIndex) {
 }
 
 async function downloadFile() {
-    const skipRows = JSON.parse(JSON.stringify(model.skipRows));
-    skipRows.sort().reverse();
+    const skipRows = [...model.skipRows];
+    skipRows.sort((a,b)=>b-a);
     for(let rowIndex of skipRows){
         model.worksheet.spliceRows(rowIndex, 1);
     }
-
 
     var excelBuffer = await model.workbook.xlsx.writeBuffer();
     var blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
