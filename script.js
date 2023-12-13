@@ -1,5 +1,6 @@
 const model = {
     skipRows: [],
+    unwantedRows: [],
 };
 
 function handleFile() {
@@ -25,17 +26,22 @@ function handleFile() {
 function initData() {
     const rows = model.worksheet.getSheetValues();
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
-        const row = rows[rowIndex];
-        const fileName = (row[2] || '').toLowerCase();
-        const name = (row[10] || '').toLowerCase();
-        if (fileName.includes('_skel.prt')
-            || fileName.trim()[0] == '1'
-            || (name.includes('99') && name.includes('part'))
-            || (name == 'pipe' || name == 'plate')
-        ) {
-            model.skipRows.push(rowIndex);
+        if(isSkipRow(rows[rowIndex], rowIndex))
+        {
+            model.unwantedRows.push(rowIndex);
         }
     }
+    model.skipRows = [...model.unwantedRows];
+}
+
+function isSkipRow(row, rowIndex){
+    const row = rows[rowIndex];
+    const fileName = (row[2] || '').toLowerCase();
+    const name = (row[10] || '').toLowerCase();
+    return fileName.includes('_skel.prt')
+        || fileName.trim()[0] == '1'
+        || (name.includes('99') && name.includes('part'))
+        || (name == 'pipe' || name == 'plate');
 }
 
 function updateView() {
@@ -54,7 +60,6 @@ function updateView() {
         '<tbody>' +
         worksheet.getSheetValues().map((row, rowIndex) => {
             if (rowIndex < 2) return '';
-            var level = row[0];
             let html = '';
             for (let colIndex = 1; colIndex < row.length; colIndex++) {
                 html += formatCell(row[colIndex] || '', colIndex, rowIndex);
@@ -84,7 +89,7 @@ function toggleRow(rowIndex) {
 
 function setSelectedRow(rowIndex, isSelected, startLevel, force) {
     const level = getLevel(rowIndex);
-    if (!force && level <= startLevel) return;
+    if (!force && level <= startLevel || model.unwantedRows.includes(rowIndex)) return;
     const skipRows = model.skipRows;
     if (isSelected) {
         const index = skipRows.indexOf(rowIndex);
