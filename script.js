@@ -29,8 +29,9 @@ function initData() {
         const fileName = (row[2] || '').toLowerCase();
         const name = (row[10] || '').toLowerCase();
         if (fileName.includes('_skel.prt')
-            || fileName[0] == '1'
+            || fileName.trim()[0] == '1'
             || (name.includes('99') && name.includes('part'))
+            || (name == 'pipe' || name == 'plate')
         ) {
             model.skipRows.push(rowIndex);
         }
