@@ -26,7 +26,7 @@ function handleFile() {
 function initData() {
     const rows = model.worksheet.getSheetValues();
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
-        if(isSkipRow(rows[rowIndex], rowIndex))
+        if(isSkipRow(rows[rowIndex]))
         {
             model.unwantedRows.push(rowIndex);
         }
@@ -34,8 +34,7 @@ function initData() {
     model.skipRows = [...model.unwantedRows];
 }
 
-function isSkipRow(row, rowIndex){
-    const row = rows[rowIndex];
+function isSkipRow(row){
     const fileName = (row[2] || '').toLowerCase();
     const name = (row[10] || '').toLowerCase();
     return fileName.includes('_skel.prt')
