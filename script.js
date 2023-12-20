@@ -26,17 +26,18 @@ function handleFile() {
 function initData() {
     const rows = model.worksheet.getSheetValues();
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
-        if(isSkipRow(rows[rowIndex]))
-        {
+        if (isSkipRow(rows[rowIndex])) {
             model.unwantedRows.push(rowIndex);
         }
     }
     model.skipRows = [...model.unwantedRows];
 }
 
-function isSkipRow(row){
-    const fileName = (row[2] || '').toLowerCase();
-    const name = (row[10] || '').toLowerCase();
+function isSkipRow(row) {
+    const showRefNo = (row[6] || '').toLowerCase();
+    const fileName = (row[7] || '').toLowerCase();
+    const name = (row[14] || '').toLowerCase();
+    const dependencyType = (row[16] || '').toLowerCase();
     return fileName.includes('_skel.prt')
         || fileName.trim()[0] == '1'
         || (name.includes('99') && name.includes('part'))
@@ -72,10 +73,11 @@ function updateView() {
 }
 
 function formatCell(content, colIndex, rowIndex) {
-    if (!content) return '<td>&nbsp;</td>';
+    //if (!content) return '<td>&nbsp;</td>';
+    if (typeof (content) != 'string') content = '';
     const checked = model.skipRows.includes(rowIndex) ? '' : 'checked';
     var checkbox = `<input onclick="toggleRow(${rowIndex})" ${checked} type="checkbox"/>`;
-    const pre = colIndex == 2 ? checkbox : ''
+    const pre = colIndex == 7 ? checkbox : '';
     return `<td>${pre + content.replaceAll(' ', '&nbsp;')}</td>`;
 }
 
@@ -111,8 +113,8 @@ function getLevel(rowIndex) {
 
 async function downloadFile() {
     const skipRows = [...model.skipRows];
-    skipRows.sort((a,b)=>b-a);
-    for(let rowIndex of skipRows){
+    skipRows.sort((a, b) => b - a);
+    for (let rowIndex of skipRows) {
         model.worksheet.spliceRows(rowIndex, 1);
     }
 
@@ -126,4 +128,3 @@ async function downloadFile() {
     a.click();
     document.body.removeChild(a);
 }
-    
