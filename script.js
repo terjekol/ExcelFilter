@@ -40,6 +40,8 @@ function isSkipRow(row) {
     const dependencyType = (row[16] || '').toLowerCase();
     return fileName.includes('_skel.prt')
         || fileName.trim()[0] == '1'
+        || showRefNo.trim() == 'no'
+        || dependencyType.trim() == 'suppressed member'
         || (name.includes('99') && name.includes('part'))
         || (name == 'pipe' || name == 'plate');
 }
