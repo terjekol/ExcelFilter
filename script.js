@@ -96,7 +96,7 @@ function setSelectedRow(rowIndex, isSelected, startLevel, force) {
     const level = getLevel(rowIndex);
     if (!force && level <= startLevel) return;
     const skipRows = model.skipRows;
-    if (isSelected && !model.unwantedRows.includes(rowIndex)) {
+    if (isSelected && (!model.unwantedRows.includes(rowIndex)||force)) {
         const index = skipRows.indexOf(rowIndex);
         if (index != -1) skipRows.splice(index, 1);
     } else {
