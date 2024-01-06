@@ -63,10 +63,12 @@ function updateView() {
         worksheet.getSheetValues().map((row, rowIndex) => {
             if (rowIndex < 2) return '';
             let html = '';
+            const isUnwanted = model.unwantedRows.includes(rowIndex);
+            const style = `style="color: darkred"`;
             for (let colIndex = 1; colIndex < row.length; colIndex++) {
                 html += formatCell(row[colIndex] || '', colIndex, rowIndex);
             }
-            return '<tr>' + html + '</tr>';
+            return `<tr ${style}>` + html + '</tr>';
         }).join('') +
         '</tbody></table>';
 
