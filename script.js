@@ -77,12 +77,21 @@ function updateView() {
 }
 
 function formatCell(content, colIndex, rowIndex) {
-    //if (!content) return '<td>&nbsp;</td>';
     if (typeof (content) != 'string') content = '';
     const checked = model.skipRows.includes(rowIndex) ? '' : 'checked';
+    if (colIndex != 7) return `<td>${content}</td>`;
+    const spaceCount = countLeadingSpaces(content);
+    const spaces = '&nbsp;'.repeat(spaceCount);
     var checkbox = `<input onclick="toggleRow(${rowIndex})" ${checked} type="checkbox"/>`;
-    const pre = colIndex == 7 ? checkbox : '';
-    return `<td>${pre + content.replaceAll(' ', '&nbsp;')}</td>`;
+    return `<td>${spaces + checkbox + content}</td>`;
+}
+
+function countLeadingSpaces(txt) {
+    let index = 0;
+    while (txt[index] == ' ') {
+        index++;
+    }
+    return index;
 }
 
 function toggleRow(rowIndex) {
@@ -96,7 +105,7 @@ function setSelectedRow(rowIndex, isSelected, startLevel, force) {
     const level = getLevel(rowIndex);
     if (!force && level <= startLevel) return;
     const skipRows = model.skipRows;
-    if (isSelected && (!model.unwantedRows.includes(rowIndex)||force)) {
+    if (isSelected && (!model.unwantedRows.includes(rowIndex) || force)) {
         const index = skipRows.indexOf(rowIndex);
         if (index != -1) skipRows.splice(index, 1);
     } else {
