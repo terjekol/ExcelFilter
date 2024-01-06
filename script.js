@@ -94,9 +94,9 @@ function toggleRow(rowIndex) {
 
 function setSelectedRow(rowIndex, isSelected, startLevel, force) {
     const level = getLevel(rowIndex);
-    if (!force && level <= startLevel || model.unwantedRows.includes(rowIndex)) return;
+    if (!force && level <= startLevel) return;
     const skipRows = model.skipRows;
-    if (isSelected) {
+    if (isSelected && !model.unwantedRows.includes(rowIndex)) {
         const index = skipRows.indexOf(rowIndex);
         if (index != -1) skipRows.splice(index, 1);
     } else {
