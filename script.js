@@ -92,6 +92,7 @@ function updateView() {
 function formatCell(content, colIndex, rowIndex) {
     if (typeof (content) != 'string') content = '';
     const checked = model.skipRows.includes(rowIndex) ? '' : 'checked';
+    if(colIndex==12)content = content.substr(0,10);
     if (colIndex != 7) return `<td>${content}</td>`;
     const spaceCount = countLeadingSpaces(content);
     const spaces = '&nbsp;'.repeat(spaceCount);
