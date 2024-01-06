@@ -1,7 +1,9 @@
 const model = {
     colIndexes: [1, 7, 8, 9, 10, 11, 12, 13, 14],
+    allColIndexes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
     skipRows: [],
     unwantedRows: [],
+    hideCols: true,
 };
 
 function handleFile() {
@@ -54,11 +56,20 @@ function updateView() {
 
     var sheetDiv = document.createElement('div');
     sheetDiv.classList.add('sheet-container');
-    sheetDiv.innerHTML = '<h3>' + worksheet.name + '</h3>';
+    sheetDiv.innerHTML = /*HTML*/`
+        <input 
+        type="checkbox" 
+        ${model.hideCols ? 'checked': ''}
+        onchange="model.hideCols=!model.hideCols;updateView()"
+        />
+        Skjul kolonner
+        <h3>${worksheet.name}</h3>    
+    `;
+    
 
     var tableHtml = '<table class="excel-table">' +
         '<thead><tr>' +
-        worksheet.getRow(1).values.map((value,index) => model.colIndexes.includes(index)? '<th>' + (value || '') + '</th>':'').join('') +
+        worksheet.getRow(1).values.map((value,index) => (model.colIndexes.includes(index) || !model.hideCols) ? '<th>' + (value || '') + '</th>':'').join('') +
         '</tr></thead>' +
         '<tbody>' +
         worksheet.getSheetValues().map((row, rowIndex) => {
@@ -66,7 +77,8 @@ function updateView() {
             let html = '';
             const isUnwanted = model.unwantedRows.includes(rowIndex);
             const style = isUnwanted ? `style="background-color: #ffeeee; color: darkred"` : '';
-            for (let colIndex of model.colIndexes) {
+            const indexes = model.hideCols ? model.colIndexes : model.allColIndexes;
+            for (let colIndex of indexes) {
                 html += formatCell(row[colIndex] || '', colIndex, rowIndex);
             }
             return `<tr ${style}>` + html + '</tr>';
