@@ -1,4 +1,5 @@
 const model = {
+    colIndexes: [1, 7, 8, 9, 10, 11, 12, 13, 14],
     skipRows: [],
     unwantedRows: [],
 };
@@ -57,7 +58,7 @@ function updateView() {
 
     var tableHtml = '<table class="excel-table">' +
         '<thead><tr>' +
-        worksheet.getRow(1).values.map(value => '<th>' + (value || '') + '</th>').join('') +
+        worksheet.getRow(1).values.map((value,index) => model.colIndexes.includes(index)? '<th>' + (value || '') + '</th>':'').join('') +
         '</tr></thead>' +
         '<tbody>' +
         worksheet.getSheetValues().map((row, rowIndex) => {
@@ -65,7 +66,7 @@ function updateView() {
             let html = '';
             const isUnwanted = model.unwantedRows.includes(rowIndex);
             const style = isUnwanted ? `style="background-color: #ffeeee; color: darkred"` : '';
-            for (let colIndex = 1; colIndex < row.length; colIndex++) {
+            for (let colIndex of model.colIndexes) {
                 html += formatCell(row[colIndex] || '', colIndex, rowIndex);
             }
             return `<tr ${style}>` + html + '</tr>';
