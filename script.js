@@ -26,14 +26,14 @@ function handleFile() {
 function initData() {
     const rows = model.worksheet.getSheetValues();
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
-        if (isSkipRow(rows[rowIndex])) {
+        if (isUnwantedRow(rows[rowIndex])) {
             model.unwantedRows.push(rowIndex);
         }
     }
     model.skipRows = [...model.unwantedRows];
 }
 
-function isSkipRow(row) {
+function isUnwantedRow(row) {
     const showRefNo = (row[6] || '').toLowerCase();
     const fileName = (row[7] || '').toLowerCase();
     const name = (row[14] || '').toLowerCase();
