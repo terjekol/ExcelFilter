@@ -64,7 +64,7 @@ function updateView() {
             if (rowIndex < 2) return '';
             let html = '';
             const isUnwanted = model.unwantedRows.includes(rowIndex);
-            const style = `style="color: darkred"`;
+            const style = isUnwanted ? `style="color: red"` : '';
             for (let colIndex = 1; colIndex < row.length; colIndex++) {
                 html += formatCell(row[colIndex] || '', colIndex, rowIndex);
             }
