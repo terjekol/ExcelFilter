@@ -39,7 +39,7 @@ function initData() {
 function isUnwantedRow(row) {
     const showRefNo = (row[6] || '').toLowerCase();
     const fileName = (row[7] || '').toLowerCase();
-    const name = (row[14] || '').toLowerCase();
+    const name = (row[13] || '').toLowerCase();
     const dependencyType = (row[16] || '').toLowerCase();
     return fileName.includes('_skel.prt')
         || fileName.trim()[0] == '1'
