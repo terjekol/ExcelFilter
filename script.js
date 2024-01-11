@@ -59,17 +59,17 @@ function updateView() {
     sheetDiv.innerHTML = /*HTML*/`
         <input 
         type="checkbox" 
-        ${model.hideCols ? 'checked': ''}
+        ${model.hideCols ? 'checked' : ''}
         onchange="model.hideCols=!model.hideCols;updateView()"
         />
         Skjul kolonner
         <h3>${worksheet.name}</h3>    
     `;
-    
+
 
     var tableHtml = '<table class="excel-table">' +
         '<thead><tr>' +
-        worksheet.getRow(1).values.map((value,index) => (model.colIndexes.includes(index) || !model.hideCols) ? '<th>' + (value || '') + '</th>':'').join('') +
+        worksheet.getRow(1).values.map((value, index) => (model.colIndexes.includes(index) || !model.hideCols) ? '<th>' + (value || '') + '</th>' : '').join('') +
         '</tr></thead>' +
         '<tbody>' +
         worksheet.getSheetValues().map((row, rowIndex) => {
@@ -92,7 +92,7 @@ function updateView() {
 function formatCell(content, colIndex, rowIndex) {
     if (typeof (content) != 'string') content = '';
     const checked = model.skipRows.includes(rowIndex) ? '' : 'checked';
-    if(colIndex==12)content = content.substr(0,10);
+    if (colIndex == 12) content = content.substr(0, 10);
     if (colIndex != 7) return `<td>${content}</td>`;
     const spaceCount = countLeadingSpaces(content);
     const spaces = '&nbsp;'.repeat(spaceCount);
