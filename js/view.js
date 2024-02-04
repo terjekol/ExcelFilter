@@ -27,9 +27,7 @@ function updateView() {
             const level = parseInt(row[1]);
             if (isCollapsed) {
                 currentCollapseLevel = level;
-                return '';
-            }
-            if (currentCollapseLevel !== null) {
+            } else if (currentCollapseLevel !== null) {
                 if (level > currentCollapseLevel) {
                     return '';
                 } else {
@@ -43,7 +41,7 @@ function updateView() {
             for (let colIndex of indexes) {
                 html += formatCell(row[colIndex] || '', colIndex, rowIndex);
             }
-            const collapseChar = isCollapsed ? '+' : '-';
+            const collapseChar = isCollapsed ? '+' : '−';
             return `<tr ${style}><td><button onclick="toggleCollapse(${rowIndex})">${collapseChar}</button></td>` + html + '</tr>';
         }).join('') +
         '</tbody></table>';
