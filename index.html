@@ -27,18 +27,25 @@
             background-color: #f2f2f2;
         }
         input.file{
-            width: 800px;
+            width: 100%;
+        }
+        .buttons{
+            display: flex;
+            justify-content: space-between;
         }
     </style>
-
-    </style>
-
 </head>
 
 <body>
-    <input class="file" type="file" id="fileInput" />
-    <button onclick="handleFile()">Last opp Excel-fil</button>
-    <button onclick="downloadFile()">Last ned Excel-fil</button>
+    <div class="buttons">
+        <div style="flex-grow: 1;"><input class="file" type="file" id="fileInput" /></div>
+        <div style="flex-grow: 0;">
+            <button onclick="handleFile()">Last opp Excel-fil</button>
+            <button onclick="downloadFile()">Last ned Excel-fil</button>
+        </div>
+    </div>
+    
+
     <div id="excelData"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
