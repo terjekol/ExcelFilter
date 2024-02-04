@@ -25,6 +25,18 @@ function isUnwantedRow(row) {
         || (name == 'pipe' || name == 'plate');
 }
 
+function toggleCollapse(rowIndex){
+    const rows = model.collapseRows;
+    if(rows.includes(rowIndex)) {
+        const index = rows.indexOf(rowIndex);
+        rows.splice(index, 1);
+        rows.remove(rowIndex);
+    }else{
+        rows.push(rowIndex);
+    }
+    updateView();
+}
+
 function toggleRow(rowIndex) {
     const isSelected = !model.skipRows.includes(rowIndex);
     const level = getLevel(rowIndex);

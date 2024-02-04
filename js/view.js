@@ -15,14 +15,27 @@ function updateView() {
         <h3>${worksheet.name}</h3>    
     `;
 
+    let currentCollapseLevel = null;
     var tableHtml = '<table class="excel-table">' +
         '<thead><tr><td></td>' +
         worksheet.getRow(1).values.map((value, index) => (model.colIndexes.includes(index) || !model.hideCols) ? '<th>' + (value || '') + '</th>' : '').join('') +
         '</tr></thead>' +
         '<tbody>' +
         worksheet.getSheetValues().map((row, rowIndex) => {
+            if (rowIndex < 2) return '';
             const isCollapsed = model.collapseRows.includes(rowIndex);
-            if (rowIndex < 2 || isCollapsed) return '';
+            const level = parseInt(row[1]);
+            if (isCollapsed) {
+                currentCollapseLevel = level;
+                return '';
+            }
+            if (currentCollapseLevel !== null) {
+                if (level > currentCollapseLevel) {
+                    return '';
+                } else {
+                    currentCollapseLevel = null;
+                }
+            }
             let html = '';
             const isUnwanted = model.unwantedRows.includes(rowIndex);
             const style = isUnwanted ? `style="background-color: #ffeeee; color: darkred"` : '';
