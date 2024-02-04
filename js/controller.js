@@ -10,7 +10,7 @@ function initData() {
 }
 
 function isUnwantedRow(row) {
-    const infoItem = (row[3]||'').toLowerCase();
+    const infoItem = (row[3] || '').toLowerCase();
     const showRefNo = (row[6] || '').toLowerCase();
     const fileName = (row[7] || '').toLowerCase();
     const name = (row[13] || '').toLowerCase();
@@ -25,13 +25,12 @@ function isUnwantedRow(row) {
         || (name == 'pipe' || name == 'plate');
 }
 
-function toggleCollapse(rowIndex){
+function toggleCollapse(rowIndex) {
     const rows = model.collapseRows;
-    if(rows.includes(rowIndex)) {
-        const index = rows.indexOf(rowIndex);
+    const index = rows.indexOf(rowIndex);
+    if (index !== -1) {
         rows.splice(index, 1);
-        rows.remove(rowIndex);
-    }else{
+    } else {
         rows.push(rowIndex);
     }
     updateView();
