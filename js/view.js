@@ -35,12 +35,15 @@ function updateView() {
                 }
             }
             let html = '';
-            const isUnwanted = model.unwantedRows.includes(rowIndex);
-            const style = isUnwanted ? `style="background-color: #ffeeee; color: darkred"` : '';
             const indexes = model.hideCols ? model.colIndexes : model.allColIndexes;
             for (let colIndex of indexes) {
                 html += formatCell(row[colIndex] || '', colIndex, rowIndex);
             }
+            const isUnwanted = model.unwantedRows.includes(rowIndex);
+            const style =
+                isUnwanted ? `style="background-color: #ffeeee; color: darkred"` :
+                    isCollapsed ? `style="background-color: lightgray"` :
+                        '';
             const collapseChar = isCollapsed ? '+' : '−';
             return `<tr ${style}><td><button onclick="toggleCollapse(${rowIndex})">${collapseChar}</button></td>` + html + '</tr>';
         }).join('') +
