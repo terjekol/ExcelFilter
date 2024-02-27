@@ -14,7 +14,7 @@ function isUnwantedRow(row) {
     const showRefNo = (row[6] || '').toLowerCase();
     const fileName = (row[7] || '').toLowerCase();
     const name = (row[13] || '').toLowerCase();
-    const dependencyType = (row[16] || '').toLowerCase();
+    const dependencyType = (row[15] || '').toLowerCase();
     return fileName.includes('_skel.prt')
         || infoItem.includes('yes')
         || fileName.trim()[0] == '1'
