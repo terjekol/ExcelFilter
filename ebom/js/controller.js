@@ -22,17 +22,19 @@ function sortWorksheetByPartNo() {
         let row = [];
         const worksheetRow = model.worksheet.getRow(i);
         for (let j = 1; j <= model.worksheet.columnCount; j++) {
-            row[j] = worksheetRow.getCell(j).value;
+            const value = worksheetRow.getCell(j).value;
+            row[j] = value && j == 5 ? parseInt(value) : value;
         }
+        // if(row && row[5] == 10000705){
+        //     console.log(i);
+        //     console.log(row);
+        // }
         rows.push(row);
     }
-    console.log(rows[0]);
     rows.sort((a, b) => {
-        const aValue = typeof (a[5]) == 'string' ? parseInt(a[5]) : 0;
-        const bValue = typeof (b[5]) == 'string' ? parseInt(b[5]) : 0;
-        return aValue - bValue;
+        return a[5] - b[5];
     });
-    for (let rowIndex = 2; rowIndex <= model.worksheet.actualRowCount; rowIndex++) {
+    for (let rowIndex = model.worksheet.actualRowCount; rowIndex > 1 ; rowIndex--) {
         const worksheetRow = model.worksheet.getRow(rowIndex);
         if (!isFileNameStartingWith1or4(worksheetRow)) {
             model.worksheet.spliceRows(rowIndex, 1);
