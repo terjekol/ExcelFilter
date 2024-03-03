@@ -22,8 +22,7 @@ function sortWorksheetByPartNo() {
         let row = [];
         const worksheetRow = model.worksheet.getRow(i);
         for (let j = 1; j <= model.worksheet.columnCount; j++) {
-            const value = worksheetRow.getCell(j).value;
-            row[j] = value && j == 5 ? parseInt(value) : value;
+            row[j] = worksheetRow.getCell(j).value;
         }
         // if(row && row[5] == 10000705){
         //     console.log(i);
@@ -32,7 +31,7 @@ function sortWorksheetByPartNo() {
         rows.push(row);
     }
     rows.sort((a, b) => {
-        return a[5] - b[5];
+        return parseInt(a[9]) - parseInt(b[5]);
     });
     for (let rowIndex = model.worksheet.actualRowCount; rowIndex > 1 ; rowIndex--) {
         const worksheetRow = model.worksheet.getRow(rowIndex);
