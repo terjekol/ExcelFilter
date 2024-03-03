@@ -26,9 +26,11 @@ function sortWorksheetByPartNo() {
         }
         rows.push(row);
     }
+    console.log(rows[0]);
     rows.sort((a, b) => {
-        const aValue = typeof (a[5]) == 'string' ? a[5] : '' + a[5];
-        return aValue.localeCompare(b[5]);
+        const aValue = typeof (a[5]) == 'string' ? parseInt(a[5]) : 0;
+        const bValue = typeof (b[5]) == 'string' ? parseInt(b[5]) : 0;
+        return aValue - bValue;
     });
     for (let rowIndex = 2; rowIndex <= model.worksheet.actualRowCount; rowIndex++) {
         const worksheetRow = model.worksheet.getRow(rowIndex);
