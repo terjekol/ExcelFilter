@@ -5,7 +5,7 @@ function initData() {
             model.worksheet.spliceRows(rowIndex, 1);
         }
     }
-    sortWorksheetByPartNo();
+    sortAndSum();
     const rows = model.worksheet.getSheetValues();
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
         if (isUnwantedRow(rows[rowIndex])) {
@@ -16,7 +16,40 @@ function initData() {
     model.collapseRows = [];
 }
 
-function sortWorksheetByPartNo() {
+function sortAndSum() {
+    let rows = rowsAsArrayOfObjects();
+    rows.sort((a, b) => parseInt(a[9]) - parseInt(b[9]));
+    let totalQuantity = 0;
+    for (let index = rows.length - 1; index > 0; index--) {
+        const partNo = parseInt(rows[index][9]);
+        const previousPartNo = index == 0 ? 0 : parseInt(rows[index - 1][9])
+        const quantity = parseInt(rows[index][3]);
+        if (partNo == previousPartNo) {
+            totalQuantity += quantity;
+            rows.splice(index, 1);
+        } else if (totalQuantity > 0) {
+            rows[index][3] = '' + (totalQuantity + quantity);
+            totalQuantity = 0;
+        } else {
+            totalQuantity = 0;
+        }
+    }
+    clearWorksheet();
+    for (let row of rows) {
+        model.worksheet.addRow(row);
+    }
+}
+
+function clearWorksheet() {
+    for (let rowIndex = model.worksheet.actualRowCount; rowIndex > 1; rowIndex--) {
+        const worksheetRow = model.worksheet.getRow(rowIndex);
+        if (!isFileNameStartingWith1or4(worksheetRow)) {
+            model.worksheet.spliceRows(rowIndex, 1);
+        }
+    }
+}
+
+function rowsAsArrayOfObjects() {
     let rows = [];
     for (let i = 2; i <= model.worksheet.actualRowCount; i++) {
         let row = [];
@@ -24,24 +57,9 @@ function sortWorksheetByPartNo() {
         for (let j = 1; j <= model.worksheet.columnCount; j++) {
             row[j] = worksheetRow.getCell(j).value;
         }
-        // if(row && row[5] == 10000705){
-        //     console.log(i);
-        //     console.log(row);
-        // }
         rows.push(row);
     }
-    rows.sort((a, b) => {
-        return parseInt(a[9]) - parseInt(b[5]);
-    });
-    for (let rowIndex = model.worksheet.actualRowCount; rowIndex > 1 ; rowIndex--) {
-        const worksheetRow = model.worksheet.getRow(rowIndex);
-        if (!isFileNameStartingWith1or4(worksheetRow)) {
-            model.worksheet.spliceRows(rowIndex, 1);
-        }
-    }
-    for(let row of rows){
-        model.worksheet.addRow(row);
-    }
+    return rows;
 }
 
 function isFileNameStartingWith1or4(row) {
