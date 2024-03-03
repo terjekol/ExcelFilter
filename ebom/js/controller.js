@@ -1,10 +1,12 @@
 function initData() {
-    const rows = model.worksheet.getSheetValues();
-    for (let rowIndex = rows.length-1; rowIndex > 1; rowIndex--) {
-        if(!isFileNameStartingWith1or4(rows[rowIndex])){
+    const originalRows = model.worksheet.getSheetValues();
+    for (let rowIndex = originalRows.length - 1; rowIndex > 1; rowIndex--) {
+        if (!isFileNameStartingWith1or4(originalRows[rowIndex])) {
             model.worksheet.spliceRows(rowIndex, 1);
         }
     }
+    sortWorksheetByPartNo();
+    const rows = model.worksheet.getSheetValues();
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
         if (isUnwantedRow(rows[rowIndex])) {
             model.unwantedRows.push(rowIndex);
@@ -14,14 +16,40 @@ function initData() {
     model.collapseRows = [];
 }
 
+function sortWorksheetByPartNo() {
+    let rows = [];
+    for (let i = 2; i <= model.worksheet.actualRowCount; i++) {
+        let row = [];
+        const worksheetRow = model.worksheet.getRow(i);
+        for (let j = 1; j <= model.worksheet.columnCount; j++) {
+            row[j] = worksheetRow.getCell(j).value;
+        }
+        rows.push(row);
+    }
+    rows.sort((a, b) => {
+        const aValue = typeof (a[5]) == 'string' ? a[5] : '' + a[5];
+        return aValue.localeCompare(b[5]);
+    });
+    for (let rowIndex = 2; rowIndex <= model.worksheet.actualRowCount; rowIndex++) {
+        const worksheetRow = model.worksheet.getRow(rowIndex);
+        if (!isFileNameStartingWith1or4(worksheetRow)) {
+            model.worksheet.spliceRows(rowIndex, 1);
+        }
+    }
+    for(let row of rows){
+        model.worksheet.addRow(row);
+    }
+}
+
 function isFileNameStartingWith1or4(row) {
     const number = (row[8] || '').toLowerCase();
-    const firstDigit =  number.trim()[0];
+    const firstDigit = number.trim()[0];
     return '14'.includes(firstDigit);
 }
 
 function isUnwantedRow(row) {
-    const infoItem = (row[3] || '').trim().toLowerCase();
+    if (!row || !row[4]) return false;
+    const infoItem = (row[4] || '').trim().toLowerCase();
     return infoItem != 'no';
 }
 
