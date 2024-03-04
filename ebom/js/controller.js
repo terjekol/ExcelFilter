@@ -1,9 +1,11 @@
 function initData() {
     const originalRows = model.worksheet.getSheetValues();
     for (let rowIndex = originalRows.length - 1; rowIndex > 1; rowIndex--) {
-        if (!isFileNameStartingWith1or4(originalRows[rowIndex])) {
+        const row = originalRows[rowIndex];
+        if (!isFileNameStartingWith1or4(row)) {
             model.worksheet.spliceRows(rowIndex, 1);
         }
+        
     }
     sortAndSum();
     const rows = model.worksheet.getSheetValues();
