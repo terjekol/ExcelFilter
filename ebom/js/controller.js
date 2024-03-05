@@ -1,16 +1,26 @@
 function initData() {
-    const originalRows = model.worksheet.getSheetValues();
-    for (let rowIndex = originalRows.length - 1; rowIndex > 1; rowIndex--) {
-        const row = originalRows[rowIndex];
-        if (!isFileNameStartingWith1or4(row)) {
-            model.worksheet.spliceRows(rowIndex, 1);
-        }
-        
-    }
-    sortAndSum();
+    // const originalRows = model.worksheet.getSheetValues();
+    // for (let rowIndex = originalRows.length - 1; rowIndex > 1; rowIndex--) {
+    //     const row = originalRows[rowIndex];
+    //     if (!isFileNameStartingWith1or4(row)) {
+    //         model.worksheet.spliceRows(rowIndex, 1);
+    //     }
+
+    // }
+    // sortAndSum();
     const rows = model.worksheet.getSheetValues();
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
-        if (isUnwantedRow(rows[rowIndex])) {
+        const row = rows[rowIndex];
+        if (!row || !row[4] || !row[5]) {
+            model.unwantedRows.push(rowIndex);
+            continue;
+        }
+        const infoItem = (row[4] || '').trim().toLowerCase();
+        const partNumber = (row[5] || '').toLowerCase();        
+        const firstDigit = partNumber.trim()[0];
+        const startsWith1or4 = '14'.includes(firstDigit);
+        if(rowIndex<10)console.log(partNumber, firstDigit, startsWith1or4);
+        if (!startsWith1or4 || infoItem != 'no') {
             model.unwantedRows.push(rowIndex);
         }
     }
@@ -62,18 +72,6 @@ function rowsAsArrayOfObjects() {
         rows.push(row);
     }
     return rows;
-}
-
-function isFileNameStartingWith1or4(row) {
-    const number = (row[8] || '').toLowerCase();
-    const firstDigit = number.trim()[0];
-    return '14'.includes(firstDigit);
-}
-
-function isUnwantedRow(row) {
-    if (!row || !row[4]) return false;
-    const infoItem = (row[4] || '').trim().toLowerCase();
-    return infoItem != 'no';
 }
 
 function toggleCollapse(rowIndex) {
