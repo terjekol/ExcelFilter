@@ -1,13 +1,4 @@
 function initData() {
-    // const originalRows = model.worksheet.getSheetValues();
-    // for (let rowIndex = originalRows.length - 1; rowIndex > 1; rowIndex--) {
-    //     const row = originalRows[rowIndex];
-    //     if (!isFileNameStartingWith1or4(row)) {
-    //         model.worksheet.spliceRows(rowIndex, 1);
-    //     }
-
-    // }
-    // sortAndSum();
     const rows = model.worksheet.getSheetValues();
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
         const row = rows[rowIndex];
@@ -16,10 +7,9 @@ function initData() {
             continue;
         }
         const infoItem = (row[4] || '').trim().toLowerCase();
-        const partNumber = (row[5] || '').toLowerCase();        
+        const partNumber = (row[5] || '').toLowerCase();
         const firstDigit = partNumber.trim()[0];
         const startsWith1or4 = '14'.includes(firstDigit);
-        if(rowIndex<10)console.log(partNumber, firstDigit, startsWith1or4);
         if (!startsWith1or4 || infoItem != 'no') {
             model.unwantedRows.push(rowIndex);
         }
@@ -30,11 +20,11 @@ function initData() {
 
 function sortAndSum() {
     let rows = rowsAsArrayOfObjects();
-    rows.sort((a, b) => parseInt(a[9]) - parseInt(b[9]));
+    rows.sort((a, b) => parseInt(a[5]) - parseInt(b[5]));
     let totalQuantity = 0;
-    for (let index = rows.length - 1; index > 0; index--) {
-        const partNo = parseInt(rows[index][9]);
-        const previousPartNo = index == 0 ? 0 : parseInt(rows[index - 1][9])
+    for (let index = rows.length - 1; index >= 0; index--) {
+        const partNo = parseInt(rows[index][5]);
+        const previousPartNo = index == 0 ? 0 : parseInt(rows[index - 1][5])
         const quantity = parseInt(rows[index][3]);
         if (partNo == previousPartNo) {
             totalQuantity += quantity;
@@ -54,10 +44,7 @@ function sortAndSum() {
 
 function clearWorksheet() {
     for (let rowIndex = model.worksheet.actualRowCount; rowIndex > 1; rowIndex--) {
-        const worksheetRow = model.worksheet.getRow(rowIndex);
-        if (!isFileNameStartingWith1or4(worksheetRow)) {
-            model.worksheet.spliceRows(rowIndex, 1);
-        }
+        model.worksheet.spliceRows(rowIndex, 1);
     }
 }
 

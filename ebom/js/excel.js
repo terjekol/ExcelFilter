@@ -24,6 +24,10 @@ async function downloadFile() {
     for (let rowIndex of skipRows) {
         model.worksheet.spliceRows(rowIndex, 1);
     }
+    model.skipRows.length = 0;
+    model.unwantedRows.length = 0;
+    sortAndSum();
+    updateView();
 
     var excelBuffer = await model.workbook.xlsx.writeBuffer();
     var blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
