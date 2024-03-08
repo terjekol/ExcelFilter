@@ -6,11 +6,12 @@ function initData() {
             model.unwantedRows.push(rowIndex);
             continue;
         }
+        const dependencyType = (row[16] || '').trim().toLowerCase();
         const infoItem = (row[4] || '').trim().toLowerCase();
         const partNumber = (row[5] || '').toLowerCase();
         const firstDigit = partNumber.trim()[0];
         const startsWith1or4 = '14'.includes(firstDigit);
-        if (!startsWith1or4 || infoItem != 'no') {
+        if (!startsWith1or4 || infoItem != 'no' || dependencyType == 'suppressed member') {
             model.unwantedRows.push(rowIndex);
         }
     }
