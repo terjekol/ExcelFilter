@@ -1,18 +1,34 @@
 function initData() {
     const rows = model.worksheet.getSheetValues();
+    let lastSuppressedMemberLevel = null;
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
         const row = rows[rowIndex];
         if (!row || !row[4] || !row[5]) {
             model.unwantedRows.push(rowIndex);
             continue;
         }
+        const fileName = (row[8] || '').trim().toLowerCase();
         const dependencyType = (row[16] || '').trim().toLowerCase();
         const infoItem = (row[4] || '').trim().toLowerCase();
-        const partNumber = (row[5] || '').toLowerCase();
-        const firstDigit = partNumber.trim()[0];
+        const number = (row[9] || '').toLowerCase();
+        const firstDigit = number.trim()[0];
         const startsWith1or4 = '14'.includes(firstDigit);
-        if (!startsWith1or4 || infoItem != 'no' || dependencyType == 'suppressed member') {
+        const isSuppressed = dependencyType == 'suppressed member';
+        const level = getLevel(rowIndex);
+        const isUnwanted = !startsWith1or4 || infoItem != 'no' || isSuppressed;
+        if (isUnwanted) {
             model.unwantedRows.push(rowIndex);
+        }
+        if (isSuppressed) {
+            lastSuppressedMemberLevel = level;
+        } else if (lastSuppressedMemberLevel != null) {
+            if (level > lastSuppressedMemberLevel) {
+                if (!isUnwanted && firstDigit == '1' && fileName.endsWith('.asm')) {
+                    model.unwantedRows.push(rowIndex);
+                }
+            } else {
+                lastSuppressedMemberLevel = null;
+            }
         }
     }
     model.skipRows = [...model.unwantedRows];
