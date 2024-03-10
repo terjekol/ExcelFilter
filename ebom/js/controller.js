@@ -13,11 +13,10 @@ function initData() {
         const number = (row[9] || '').toLowerCase();
         const firstDigit = number.trim()[0];
         const startsWith1or4asm = '14'.includes(firstDigit);
-        const isSuppressed2or4 = dependencyType == 'suppressed member'
-         && '24'.includes(firstDigit)
-         && fileName.endsWith('.asm');
+        const isSuppressed = dependencyType == 'suppressed member';
+        const isSuppressed2or4 = isSuppressed && '24'.includes(firstDigit) && fileName.endsWith('.asm');
         const level = getLevel(rowIndex);
-        const isUnwanted = !startsWith1or4asm || infoItem != 'no' || isSuppressed2or4;
+        const isUnwanted = !startsWith1or4asm || infoItem != 'no' || isSuppressed;
         if (isUnwanted) {
             model.unwantedRows.push(rowIndex);
         }
