@@ -3,10 +3,6 @@ function initData() {
     let lastSuppressedMemberLevel = null;
     for (let rowIndex = 2; rowIndex < rows.length; rowIndex++) {
         const row = rows[rowIndex];
-        if (!row || !row[4] || !row[5]) {
-            model.unwantedRows.push(rowIndex);
-            continue;
-        }
         const fileName = (row[8] || '').trim().toLowerCase();
         const dependencyType = (row[16] || '').trim().toLowerCase();
         const infoItem = (row[4] || '').trim().toLowerCase();
