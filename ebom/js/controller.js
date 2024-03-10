@@ -12,18 +12,20 @@ function initData() {
         const infoItem = (row[4] || '').trim().toLowerCase();
         const number = (row[9] || '').toLowerCase();
         const firstDigit = number.trim()[0];
-        const startsWith1or4 = '14'.includes(firstDigit);
-        const isSuppressed = dependencyType == 'suppressed member';
+        const startsWith1or4asm = '14'.includes(firstDigit);
+        const isSuppressed2or4 = dependencyType == 'suppressed member'
+         && '24'.includes(firstDigit)
+         && fileName.endsWith('.asm');
         const level = getLevel(rowIndex);
-        const isUnwanted = !startsWith1or4 || infoItem != 'no' || isSuppressed;
+        const isUnwanted = !startsWith1or4asm || infoItem != 'no' || isSuppressed2or4;
         if (isUnwanted) {
             model.unwantedRows.push(rowIndex);
         }
-        if (isSuppressed) {
+        if (isSuppressed2or4) {
             lastSuppressedMemberLevel = level;
         } else if (lastSuppressedMemberLevel != null) {
             if (level > lastSuppressedMemberLevel) {
-                if (!isUnwanted && firstDigit == '1' && fileName.endsWith('.asm')) {
+                if (!isUnwanted && firstDigit == '1') {
                     model.unwantedRows.push(rowIndex);
                 }
             } else {
