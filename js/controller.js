@@ -10,6 +10,7 @@ function initData() {
 }
 
 function isUnwantedRow(row) {
+    if (!row) return true;
     const infoItem = (row[3] || '').toLowerCase();
     const showRefNo = (row[6] || '').toLowerCase();
     const fileName = (row[7] || '').toLowerCase();
